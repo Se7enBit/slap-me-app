@@ -2,9 +2,8 @@ package com.noikonomist.slapme.ui.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -16,11 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.noikonomist.slapme.R
 import com.noikonomist.slapme.debug.DebugPanel
-import com.noikonomist.slapme.ui.theme.SlapMeTheme
 
 @Composable
 fun HomeScreen(modifier: Modifier = Modifier) {
@@ -31,7 +28,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 .padding(innerPadding)
                 .verticalScroll(rememberScrollState())
                 .padding(24.dp),
-            verticalArrangement = Arrangement.Center,
+            verticalArrangement = Arrangement.spacedBy(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
@@ -39,7 +36,7 @@ fun HomeScreen(modifier: Modifier = Modifier) {
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.primary,
             )
-            Spacer(Modifier.height(12.dp))
+            FixItCards(Modifier.fillMaxWidth())
             Text(
                 text = stringResource(R.string.home_status_not_armed),
                 style = MaterialTheme.typography.titleMedium,
@@ -47,13 +44,5 @@ fun HomeScreen(modifier: Modifier = Modifier) {
             )
             DebugPanel()
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun HomeScreenPreview() {
-    SlapMeTheme {
-        HomeScreen()
     }
 }
