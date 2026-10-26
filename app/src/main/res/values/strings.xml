@@ -230,6 +230,7 @@
     <string name="stats_chart_description_slaps">Slaps per day: %1$s.</string>
     <string name="stats_chart_description_time">Minutes used per day: %1$s.</string>
     <string name="stats_week_title">This week</string>
+    <string name="stats_week_title_past">That week</string>
     <string name="stats_total_slaps">Slaps</string>
     <string name="stats_busiest_day">Busiest day</string>
     <string name="stats_longest_focus">Longest focus streak</string>

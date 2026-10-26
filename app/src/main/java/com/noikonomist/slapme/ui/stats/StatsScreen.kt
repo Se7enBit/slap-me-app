@@ -122,7 +122,10 @@ fun StatsScreen(onBack: () -> Unit) {
             // Week summary
             Card(Modifier.fillMaxWidth()) {
                 CardColumn {
-                    Text(stringResource(R.string.stats_week_title), style = MaterialTheme.typography.titleLarge)
+                    Text(
+                        stringResource(if (weeksBack == 0) R.string.stats_week_title else R.string.stats_week_title_past),
+                        style = MaterialTheme.typography.titleLarge,
+                    )
                     SummaryRow(stringResource(R.string.stats_total_slaps), week.totalSlaps.toString())
                     week.busiestDay?.let {
                         SummaryRow(
