@@ -1,12 +1,126 @@
 <resources>
     <string name="app_name">Slap Me</string>
-    <string name="home_status_not_armed">Not armed yet. Nothing will slap you… for now.</string>
     <!-- Comic sound effect shown at the moment of the slap. -->
     <string name="slap_burst">SLAP!</string>
 
-    <!-- Durations, e.g. "30 s", "10 min". -->
+    <!-- Durations, e.g. "30 s", "10 min", "1 h 30 min". -->
     <string name="duration_seconds">%1$d s</string>
     <string name="duration_minutes">%1$d min</string>
+    <string name="duration_minutes_seconds">%1$d min %2$d s</string>
+    <string name="duration_hours">%1$d h</string>
+    <string name="duration_hours_minutes">%1$d h %2$d min</string>
+    <!-- Upcoming times: "today at 14:00", "tomorrow at 09:00", "Tue at 09:00". -->
+    <string name="when_today">today at %1$s</string>
+    <string name="when_tomorrow">tomorrow at %1$s</string>
+    <string name="when_day">%1$s at %2$s</string>
+
+    <string name="action_back">Back</string>
+    <string name="action_ok">OK</string>
+    <string name="action_cancel">Cancel</string>
+
+    <!-- Home -->
+    <string name="home_off_title">Off</string>
+    <string name="home_off_text">Nothing will slap you. Start a focus session, add a schedule or turn on always on.</string>
+    <string name="home_armed_title">Armed</string>
+    <string name="home_armed_next">Next focus time: %1$s.</string>
+    <string name="home_armed_waiting">Waiting for focus time.</string>
+    <string name="home_active_title">Watching</string>
+    <string name="home_active_streak">%1$s of %2$s without a break</string>
+    <string name="home_active_level">Limit %1$d of %2$d</string>
+    <string name="home_usage_counting">Counting right now.</string>
+    <string name="home_usage_paused">Paused: a call, navigation, the camera or Slap Me itself.</string>
+    <string name="home_usage_idle">Taking a break.</string>
+    <string name="home_snoozed_until">Snoozed until %1$s.</string>
+    <string name="home_lockout_title">Locked out</string>
+    <string name="home_lockout_text">Any use gets slapped until the timer runs out. Breaks don\'t shorten it.</string>
+    <string name="home_session_start">Start a focus session</string>
+    <string name="home_session_until_stopped">Until I stop</string>
+    <string name="home_session_running">Focus session</string>
+    <string name="home_session_left">%1$s left</string>
+    <string name="home_session_open">Until you stop it.</string>
+    <string name="home_session_stop">Stop session</string>
+    <string name="home_modes_title">When to watch</string>
+    <string name="home_schedules_none">None yet</string>
+    <plurals name="home_schedules_count">
+        <item quantity="one">%1$d block</item>
+        <item quantity="other">%1$d blocks</item>
+    </plurals>
+    <string name="home_today_title">Today</string>
+    <string name="home_today_used">used</string>
+    <string name="home_today_slaps">slaps</string>
+    <string name="home_today_focus">longest focus</string>
+    <string name="home_today_overrides">overrides</string>
+
+    <!-- Schedules -->
+    <string name="schedules_title">Schedules</string>
+    <string name="schedules_add">Add a block</string>
+    <string name="schedules_empty">No schedules yet. Add your work or study hours and Slap Me will watch during them, every week.</string>
+    <string name="days_every_day">Every day</string>
+    <string name="days_weekdays">Weekdays</string>
+    <string name="days_weekend">Weekend</string>
+    <string name="schedule_all_day">All day</string>
+    <string name="schedule_next_day">%1$s (next day)</string>
+    <string name="schedule_new_title">New block</string>
+    <string name="schedule_edit_title">Edit block</string>
+    <string name="schedule_delete">Delete block</string>
+    <string name="schedule_days">Days</string>
+    <string name="schedule_starts">Starts</string>
+    <string name="schedule_ends">Ends</string>
+    <string name="schedule_crosses_midnight">Ends the next day.</string>
+    <string name="schedule_error_no_days">Pick at least one day.</string>
+    <string name="schedule_error_same_times">Start and end can\'t be the same. For a whole day, turn on All day.</string>
+    <string name="schedule_save">Save</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_section_activation">When to watch</string>
+    <string name="settings_always_on">Always on</string>
+    <string name="settings_always_on_text">The limit applies all day, every day.</string>
+    <string name="settings_daily_cap">Daily cap</string>
+    <string name="settings_daily_cap_text">After this much use in a day, every streak gets the shortest limit.</string>
+    <string name="settings_daily_cap_value">Cap</string>
+    <string name="settings_section_counting">What counts</string>
+    <string name="settings_mode_screen_on">Any app while the phone is unlocked</string>
+    <string name="settings_mode_blacklist">Only distracting apps</string>
+    <string name="settings_mode_whitelist">Everything except allowed apps</string>
+    <plurals name="settings_apps_chosen">
+        <item quantity="one">%1$d app chosen</item>
+        <item quantity="other">%1$d apps chosen</item>
+    </plurals>
+    <string name="settings_choose_apps">Choose apps</string>
+    <string name="settings_counting_note">Calls, navigation, the camera and Slap Me itself never count.</string>
+    <string name="settings_section_limits">Limits</string>
+    <string name="settings_limits_note">Each slap moves you to the next, shorter limit. A slap at the last one starts a lockout.</string>
+    <string name="settings_level_first">First limit</string>
+    <string name="settings_level">Limit %1$d</string>
+    <string name="settings_level_remove">Remove this limit</string>
+    <string name="settings_level_add">Add a limit</string>
+    <string name="settings_section_breaks">Breaks</string>
+    <string name="settings_streak_break">A break this long resets your streak</string>
+    <string name="settings_escalation_break">A break this long takes you back to the first limit</string>
+    <string name="settings_section_lockout">Lockout</string>
+    <string name="settings_lockout_length">Length</string>
+    <string name="settings_lockout_grace">Grace before each slap</string>
+    <string name="settings_section_warning">Warning</string>
+    <string name="settings_warning">Warn me before a slap</string>
+    <string name="settings_warning_off">Off</string>
+    <string name="settings_section_sound">Sound</string>
+    <string name="settings_always_play">Always play the slap sound</string>
+    <string name="settings_always_play_text">Off: silent when the phone is on silent, vibrate or Do Not Disturb. On: plays at alarm volume even then.</string>
+    <string name="settings_section_navigation">Navigation apps</string>
+    <plurals name="settings_navigation_text">
+        <item quantity="one">%1$d app never counts</item>
+        <item quantity="other">%1$d apps never count</item>
+    </plurals>
+
+    <!-- App picker -->
+    <string name="apps_title_distracting">Distracting apps</string>
+    <string name="apps_title_allowed">Allowed apps</string>
+    <string name="apps_title_navigation">Navigation apps</string>
+    <string name="apps_hint_distracting">Only time in these apps counts.</string>
+    <string name="apps_hint_allowed">Time in these apps never counts; everything else does.</string>
+    <string name="apps_hint_navigation">Navigating doesn\'t count, in any mode.</string>
+    <string name="apps_search">Search apps</string>
 
     <!-- Monitoring notifications -->
     <string name="monitor_channel_ongoing">Monitoring</string>

@@ -20,7 +20,7 @@ import com.noikonomist.slapme.AppContainer
 import com.noikonomist.slapme.SlapMeApp
 import com.noikonomist.slapme.permissions.PermissionState
 import com.noikonomist.slapme.permissions.PermissionStatus
-import com.noikonomist.slapme.ui.home.HomeScreen
+import com.noikonomist.slapme.ui.navigation.SlapMeNavHost
 import com.noikonomist.slapme.ui.onboarding.OnboardingScreen
 import kotlinx.coroutines.launch
 
@@ -37,7 +37,7 @@ fun AppRoot() {
     when (val state = onboarding) {
         null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         else -> if (state.completed) {
-            HomeScreen()
+            SlapMeNavHost()
         } else {
             OnboardingScreen(onFinished = { scope.launch { container.onboardingRepository.complete() } })
         }

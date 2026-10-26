@@ -13,6 +13,8 @@ object DaysMask {
 
     fun contains(mask: Int, day: DayOfWeek): Boolean = mask and bit(day) != 0
 
+    fun days(mask: Int): Set<DayOfWeek> = DayOfWeek.entries.filterTo(mutableSetOf()) { contains(mask, it) }
+
     private fun bit(day: DayOfWeek) = 1 shl (day.value - 1)
 }
 
@@ -114,6 +116,22 @@ data class ActivationRules(
         }?.let { return it }
 
         return if (alwaysOn) ActivePeriod.AlwaysOn(local.toLocalDate()) else null
+    }
+
+    /** When the app next becomes active: [now] if it already is, null if nothing will activate it. */
+    fun nextActivation(now: Instant, zone: ZoneId): Instant? {
+        if (isActive(now, zone)) return now
+        val candidates = mutableListOf<Instant>()
+        session?.let { s -> Instant.ofEpochMilli(s.startMillis).takeIf { it > now && s.isRunning(s.startMillis) }?.let(candidates::add) }
+        val today = now.atZone(zone).toLocalDate()
+        for (block in blocks.filter { it.enabled && it.isValid }) {
+            // A week ahead covers every weekly block.
+            for (offset in 0L..7L) {
+                val date = today.plusDays(offset)
+                if (block.runsOn(date)) block.startOn(date, zone).takeIf { it > now }?.let(candidates::add)
+            }
+        }
+        return candidates.minOrNull()
     }
 
     /** Instants strictly between [from] and [to] where [isActive] may change. */
