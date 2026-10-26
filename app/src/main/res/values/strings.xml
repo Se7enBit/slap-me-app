@@ -209,4 +209,44 @@
     <string name="friction_type_this">Type this to continue:</string>
     <!-- The phrase the user must type to get more time. Translate it; matching ignores case and a final period. -->
     <string name="friction_phrase">I choose to be distracted</string>
+    <!-- The phrase shown in quotation marks; use your language's quotes. -->
+    <string name="friction_phrase_quoted">“%1$s”</string>
+
+    <!-- Small shared bits -->
+    <string name="granted_mark">✓ %1$s</string>
+    <!-- A time range, e.g. "9:00 AM–5:00 PM". -->
+    <string name="time_range">%1$s–%2$s</string>
+    <string name="action_decrease">Decrease %1$s</string>
+    <string name="action_increase">Increase %1$s</string>
+
+    <!-- Stats -->
+    <string name="stats_title">Stats</string>
+    <string name="stats_previous_week">Previous week</string>
+    <string name="stats_next_week">Next week</string>
+    <string name="stats_metric_slaps">Slaps</string>
+    <string name="stats_metric_time">Time used</string>
+    <string name="stats_minutes_short">min</string>
+    <string name="stats_time_axis_note">Minutes of counted use per day.</string>
+    <string name="stats_chart_description_slaps">Slaps per day: %1$s.</string>
+    <string name="stats_chart_description_time">Minutes used per day: %1$s.</string>
+    <string name="stats_week_title">This week</string>
+    <string name="stats_total_slaps">Slaps</string>
+    <string name="stats_busiest_day">Busiest day</string>
+    <string name="stats_longest_focus">Longest focus streak</string>
+    <string name="stats_time_used">Time used</string>
+    <string name="stats_snoozes">Free snoozes</string>
+    <string name="stats_friction">Overrides (typed phrase)</string>
+    <string name="stats_switch_offs">Switched off during a lockout</string>
+    <string name="stats_days_title">Day by day</string>
+    <!-- "3 slaps · 42 min used · longest focus 1 h 10 min" -->
+    <string name="stats_day_line">%1$s · %2$s used · longest focus %3$s</string>
+    <plurals name="stats_slaps">
+        <item quantity="one">%1$d slap</item>
+        <item quantity="other">%1$d slaps</item>
+    </plurals>
+    <!-- "Tuesday (5 slaps)" -->
+    <plurals name="stats_slaps_on">
+        <item quantity="one">%1$s (%2$d slap)</item>
+        <item quantity="other">%1$s (%2$d slaps)</item>
+    </plurals>
 </resources>

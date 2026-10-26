@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Icon
@@ -35,6 +36,7 @@ import kotlinx.coroutines.launch
 fun HomeScreen(
     onOpenSchedules: () -> Unit,
     onOpenSettings: () -> Unit,
+    onOpenStats: () -> Unit,
     onNeedMoreTime: () -> Unit,
     onSwitchOffParked: () -> Unit,
 ) {
@@ -65,6 +67,9 @@ fun HomeScreen(
         title = stringResource(R.string.app_name),
         onBack = null,
         actions = {
+            IconButton(onClick = onOpenStats) {
+                Icon(Icons.AutoMirrored.Filled.List, contentDescription = stringResource(R.string.stats_title))
+            }
             IconButton(onClick = onOpenSchedules) {
                 Icon(Icons.Default.DateRange, contentDescription = stringResource(R.string.schedules_title))
             }
@@ -100,7 +105,7 @@ fun HomeScreen(
                     },
                     onOpenSchedules = onOpenSchedules,
                 )
-                TodayCard()
+                TodayCard(onClick = onOpenStats)
             }
             DebugPanel()
         }
