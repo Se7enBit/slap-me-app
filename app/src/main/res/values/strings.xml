@@ -3,4 +3,25 @@
     <string name="home_status_not_armed">Not armed yet. Nothing will slap you… for now.</string>
     <!-- Comic sound effect shown at the moment of the slap. -->
     <string name="slap_burst">SLAP!</string>
+
+    <!-- Durations, e.g. "30 s", "10 min". -->
+    <string name="duration_seconds">%1$d s</string>
+    <string name="duration_minutes">%1$d min</string>
+
+    <!-- Monitoring notifications -->
+    <string name="monitor_channel_ongoing">Monitoring</string>
+    <string name="monitor_channel_warning">Slap warnings</string>
+    <string name="monitor_channel_slapped">After a slap</string>
+    <string name="monitor_ongoing_title_armed">Slap Me is armed</string>
+    <string name="monitor_ongoing_title_active">Slap Me is watching</string>
+    <string name="monitor_ongoing_title_lockout">Locked out</string>
+    <string name="monitor_ongoing_text_waiting">Waiting for focus time.</string>
+    <string name="monitor_ongoing_text_active">Level %1$d: slap after %2$s of use.</string>
+    <string name="monitor_ongoing_text_lockout">Any use gets slapped until %1$s.</string>
+    <string name="monitor_ongoing_text_no_usage_access">Usage access is off. Tap to fix.</string>
+    <string name="monitor_warning_title">Slap incoming!</string>
+    <string name="monitor_warning_text">Put the phone down or get slapped.</string>
+    <string name="monitor_warning_snooze">Snooze %1$s</string>
+    <string name="monitor_slapped_title">Slapped!</string>
+    <string name="monitor_slapped_text">Need more time?</string>
 </resources>

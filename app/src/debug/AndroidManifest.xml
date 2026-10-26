@@ -1,14 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Debug builds only: the "Slap me in 10 s" spike service and what it needs to report results. -->
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
-    <!-- Only to verify that Home was really reached after a slap. -->
-    <uses-permission
-        android:name="android.permission.PACKAGE_USAGE_STATS"
-        tools:ignore="ProtectedPermissions" />
+<!-- Debug builds only: the "Slap me in 10 s" spike service. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application>
         <service

@@ -29,17 +29,28 @@ class SlapHaptics(context: Context) {
         } else {
             VibrationEffect.createWaveform(FALLBACK_TIMINGS, NO_REPEAT)
         }
+        vibrate(effect)
+        return if (amplitude) "waveform with amplitudes" else "on/off fallback"
+    }
+
+    /** A short buzz that comes with the warning. */
+    fun buzz() {
+        if (!vibrator.hasVibrator()) return
+        vibrate(VibrationEffect.createOneShot(BUZZ_MS, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    private fun vibrate(effect: VibrationEffect) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             vibrator.vibrate(effect, VibrationAttributes.createForUsage(VibrationAttributes.USAGE_ALARM))
         } else {
             @Suppress("DEPRECATION")
             vibrator.vibrate(effect, AudioAttributes.Builder().setUsage(AudioAttributes.USAGE_ALARM).build())
         }
-        return if (amplitude) "waveform with amplitudes" else "on/off fallback"
     }
 
     private companion object {
         const val NO_REPEAT = -1
+        const val BUZZ_MS = 120L
 
         // off, HIT, gap, rumble decaying
         val TIMINGS = longArrayOf(0, 60, 30, 90, 90, 90)
