@@ -136,7 +136,7 @@ private fun FrictionPanel(confirmLabel: String, onConfirmed: () -> Unit) {
         return
     }
     Text(stringResource(R.string.friction_type_this), style = MaterialTheme.typography.bodyLarge)
-    Text("“$phrase”", style = MaterialTheme.typography.titleLarge)
+    Text(stringResource(R.string.friction_phrase_quoted, phrase), style = MaterialTheme.typography.titleLarge)
     // No copy/paste menu: the point is to type it.
     CompositionLocalProvider(LocalTextToolbar provides NoTextToolbar) {
         OutlinedTextField(
