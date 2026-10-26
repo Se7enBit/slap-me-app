@@ -1,0 +1,5 @@
+<resources>
+    <color name="window_background">#FFFFF8F6</color>
+    <!-- Adaptive icon background yellow (the rays are drawn on top). -->
+    <color name="icon_yellow">#FFFFD23F</color>
+</resources>

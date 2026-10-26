@@ -1,3 +1,6 @@
 <resources>
-    <style name="Theme.SlapMe" parent="android:Theme.Material.Light.NoActionBar" />
+    <!-- Window theme behind Compose; the background matches the brand surface so launch doesn't flash. -->
+    <style name="Theme.SlapMe" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/window_background</item>
+    </style>
 </resources>
