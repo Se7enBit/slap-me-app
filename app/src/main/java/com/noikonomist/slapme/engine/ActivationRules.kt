@@ -48,7 +48,15 @@ data class ScheduleBlock(
         }
     }
 
-    private fun runsOn(date: LocalDate) = DaysMask.contains(daysMask, date.dayOfWeek)
+    internal fun runsOn(date: LocalDate) = DaysMask.contains(daysMask, date.dayOfWeek)
+
+    internal fun startOn(date: LocalDate, zone: ZoneId): Instant = date.atMinute(startMinute, zone)
+
+    internal fun endOn(date: LocalDate, zone: ZoneId): Instant =
+        (if (startMinute < endMinute) date else date.plusDays(1)).atMinute(endMinute, zone)
+
+    private fun LocalDate.atMinute(minute: Int, zone: ZoneId): Instant =
+        atStartOfDay().plusMinutes(minute.toLong()).atZone(zone).toInstant()
 
     private companion object {
         const val MINUTES_PER_DAY = 24 * 60
@@ -106,5 +114,27 @@ data class ActivationRules(
         }?.let { return it }
 
         return if (alwaysOn) ActivePeriod.AlwaysOn(local.toLocalDate()) else null
+    }
+
+    /** Instants strictly between [from] and [to] where [isActive] may change. */
+    internal fun changesBetween(from: Instant, to: Instant, zone: ZoneId): List<Instant> {
+        val points = sortedSetOf<Instant>()
+        session?.let { s ->
+            points += Instant.ofEpochMilli(s.startMillis)
+            s.plannedEndMillis?.let { points += Instant.ofEpochMilli(it) }
+        }
+        val lastDate = to.atZone(zone).toLocalDate()
+        for (block in blocks.filter { it.enabled && it.isValid }) {
+            // Start a day early: yesterday's midnight-crossing occurrence may end inside the interval.
+            var date = from.atZone(zone).toLocalDate().minusDays(1)
+            while (!date.isAfter(lastDate)) {
+                if (block.runsOn(date)) {
+                    points += block.startOn(date, zone)
+                    points += block.endOn(date, zone)
+                }
+                date = date.plusDays(1)
+            }
+        }
+        return points.filter { it > from && it < to }
     }
 }
