@@ -55,7 +55,7 @@ class MonitorNotifications(private val context: Context) {
             else -> R.string.monitor_ongoing_title_armed to context.getString(R.string.monitor_ongoing_text_waiting)
         }
         val builder = NotificationCompat.Builder(context, CHANNEL_ONGOING)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_slap)
             .setContentTitle(context.getString(title))
             .setContentText(text)
             .setContentIntent(openApp())
@@ -72,7 +72,7 @@ class MonitorNotifications(private val context: Context) {
 
     fun showWarning(slapAtMillis: Long, freeSnoozeAvailable: Boolean, snooze: Duration) {
         val builder = NotificationCompat.Builder(context, CHANNEL_WARNING)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_slap)
             .setContentTitle(context.getString(R.string.monitor_warning_title))
             .setContentText(context.getString(R.string.monitor_warning_text))
             .setWhen(slapAtMillis)
@@ -99,7 +99,7 @@ class MonitorNotifications(private val context: Context) {
     fun showSlapped() = post(
         ID_SLAPPED,
         NotificationCompat.Builder(context, CHANNEL_SLAPPED)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_slap)
             .setContentTitle(context.getString(R.string.monitor_slapped_title))
             .setContentText(context.getString(R.string.monitor_slapped_text))
             .setContentIntent(openApp(openOverride = true))

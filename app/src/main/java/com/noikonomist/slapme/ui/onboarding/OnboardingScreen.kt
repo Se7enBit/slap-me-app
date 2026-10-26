@@ -194,7 +194,7 @@ private fun ColumnScope.PermissionStep(
 
 @Composable
 private fun GrantedLabel(text: Int) {
-    Text("✓ " + stringResource(text), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
+    Text(stringResource(R.string.granted_mark, stringResource(text)), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary)
 }
 
 @Composable

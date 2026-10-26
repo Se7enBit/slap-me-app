@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Adaptive icon background: comic yellow with orange rays. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="@color/icon_yellow" android:pathData="M0,0 H108 V108 H0 Z" />
+    <path android:fillColor="#FFFFA62B" android:pathData="M54,54 L134.00,54.00 L129.18,81.36 Z M54,54 L115.28,105.42 L94.00,123.28 Z M54,54 L67.89,132.78 L40.11,132.78 Z M54,54 L14.00,123.28 L-7.28,105.42 Z M54,54 L-21.18,81.36 L-26.00,54.00 Z M54,54 L-21.18,26.64 L-7.28,2.58 Z M54,54 L14.00,-15.28 L40.11,-24.78 Z M54,54 L67.89,-24.78 L94.00,-15.28 Z M54,54 L115.28,2.58 L129.18,26.64 Z" />
+</vector>

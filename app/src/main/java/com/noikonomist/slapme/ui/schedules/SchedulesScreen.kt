@@ -106,6 +106,6 @@ fun timeText(minute: Int): String =
 @Composable
 private fun timeRangeLabel(block: ScheduleBlock): String {
     if (block.startMinute == 0 && block.endMinute == 24 * 60) return stringResource(R.string.schedule_all_day)
-    val range = "${timeText(block.startMinute)}–${timeText(block.endMinute)}"
+    val range = stringResource(R.string.time_range, timeText(block.startMinute), timeText(block.endMinute))
     return if (block.endMinute < block.startMinute) stringResource(R.string.schedule_next_day, range) else range
 }

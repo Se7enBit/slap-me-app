@@ -147,7 +147,7 @@ fun ModesCard(alwaysOn: Boolean, blockCount: Int, onAlwaysOn: (Boolean) -> Unit,
 }
 
 @Composable
-fun TodayCard() {
+fun TodayCard(onClick: () -> Unit) {
     val history = appContainer().historyRepository
     val zone = ZoneId.systemDefault()
     val today = remember { LocalDate.now(zone) }
@@ -158,7 +158,7 @@ fun TodayCard() {
     val overrides by remember(from) { history.overrides(from, to) }.collectAsState(initial = emptyList())
     val stats = usage.firstOrNull()
 
-    Card(Modifier.fillMaxWidth()) {
+    Card(onClick = onClick, modifier = Modifier.fillMaxWidth()) {
         CardColumn {
             Title(stringResource(R.string.home_today_title))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {

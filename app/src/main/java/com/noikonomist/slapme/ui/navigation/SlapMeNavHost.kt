@@ -16,6 +16,7 @@ import com.noikonomist.slapme.ui.schedules.BlockEditorScreen
 import com.noikonomist.slapme.ui.schedules.SchedulesScreen
 import com.noikonomist.slapme.ui.settings.AppListKind
 import com.noikonomist.slapme.ui.settings.SettingsScreen
+import com.noikonomist.slapme.ui.stats.StatsScreen
 
 private object Routes {
     const val HOME = "home"
@@ -24,6 +25,7 @@ private object Routes {
     const val SETTINGS = "settings"
     const val APPS = "apps/{kind}"
     const val OVERRIDE = "override?purpose={purpose}"
+    const val STATS = "stats"
 
     fun block(id: Long) = "schedules/$id"
     fun apps(kind: AppListKind) = "apps/${kind.name}"
@@ -45,9 +47,13 @@ fun SlapMeNavHost(overrideRequest: Int) {
             HomeScreen(
                 onOpenSchedules = { nav.navigate(Routes.SCHEDULES) },
                 onOpenSettings = { nav.navigate(Routes.SETTINGS) },
+                onOpenStats = { nav.navigate(Routes.STATS) },
                 onNeedMoreTime = { toOverride(OverridePurpose.MORE_TIME) },
                 onSwitchOffParked = { toOverride(OverridePurpose.SWITCH_OFF) },
             )
+        }
+        composable(Routes.STATS) {
+            StatsScreen(onBack = { nav.popBackStack() })
         }
         composable(Routes.SCHEDULES) {
             SchedulesScreen(

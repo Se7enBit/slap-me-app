@@ -30,6 +30,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.noikonomist.slapme.R
@@ -158,14 +160,20 @@ fun StepperRow(
 ) {
     Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
         Text(title, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-        OutlinedIconButton(onClick = onMinus, enabled = minusEnabled) { Text("−") }
+        val decrease = stringResource(R.string.action_decrease, title)
+        val increase = stringResource(R.string.action_increase, title)
+        OutlinedIconButton(onClick = onMinus, enabled = minusEnabled, modifier = Modifier.semantics { contentDescription = decrease }) {
+            Text("−")
+        }
         Text(
             value,
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 8.dp).widthIn(min = 64.dp),
         )
-        OutlinedIconButton(onClick = onPlus, enabled = plusEnabled) { Text("+") }
+        OutlinedIconButton(onClick = onPlus, enabled = plusEnabled, modifier = Modifier.semantics { contentDescription = increase }) {
+            Text("+")
+        }
         trailing()
     }
 }
