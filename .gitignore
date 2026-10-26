@@ -22,3 +22,7 @@ captures/
 # Local-only docs
 CLAUDE.md
 Slap Me — Build Guide.md
+
+# JVM crash dumps
+hs_err_pid*.log
+replay_pid*.log
