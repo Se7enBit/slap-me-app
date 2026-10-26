@@ -14,10 +14,12 @@ import com.noikonomist.slapme.data.settings.OnboardingRepository
 import com.noikonomist.slapme.data.settings.SettingsRepository
 import com.noikonomist.slapme.data.settings.preferencesStore
 import com.noikonomist.slapme.debug.DebugHooks
+import com.noikonomist.slapme.monitor.MonitorBridge
 import com.noikonomist.slapme.monitor.MonitorStatus
 import com.noikonomist.slapme.monitor.MonitorStore
 import com.noikonomist.slapme.monitor.PersistentMonitorStore
 import com.noikonomist.slapme.slap.SlapHaptics
+import com.noikonomist.slapme.ui.override.SwitchOff
 import com.noikonomist.slapme.slap.SlapPipeline
 import com.noikonomist.slapme.slap.SlapSound
 import com.noikonomist.slapme.util.DeviceClock
@@ -80,6 +82,13 @@ class AppContainer(app: Application) {
 
     /** Live monitor status, published by the running MonitorService (empty when it isn't running). */
     val monitorStatus = MutableStateFlow(MonitorStatus())
+
+    /** Snooze / override requests from the UI to the running monitor. */
+    val monitorBridge = MonitorBridge()
+
+    /** A switch-off parked behind the friction override during a lockout. */
+    @Volatile
+    var pendingSwitchOff: SwitchOff? = null
     val monitorStore: MonitorStore by lazy {
         PersistentMonitorStore(engineStateRepository, effectRecorder, diagnosticsRepository)
     }
