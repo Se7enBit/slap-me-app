@@ -3,6 +3,9 @@ package com.noikonomist.slapme.ui.apps
 data class AppEntry(val packageName: String, val label: String)
 
 object AppListFilter {
+    /** How many of the [selected] apps are actually installed. */
+    fun installedCount(selected: Set<String>, installed: Set<String>): Int = selected.count { it in installed }
+
     /** One entry per app, without Slap Me, matching [query]; [selected] apps first, then by name. */
     fun apply(apps: List<AppEntry>, selected: Set<String>, query: String, self: String): List<AppEntry> {
         val q = query.trim()

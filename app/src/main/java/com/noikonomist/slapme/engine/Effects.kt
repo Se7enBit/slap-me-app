@@ -4,7 +4,13 @@ import kotlin.time.Duration
 
 enum class SlapReason { THRESHOLD, LOCKOUT, DAILY_CAP }
 
-enum class OverrideType { SNOOZE, FRICTION }
+enum class OverrideType {
+    SNOOZE,
+    FRICTION,
+
+    /** Switching off during a lockout (stop session, always-on off, current block off) after the friction flow. */
+    SWITCH_OFF,
+}
 
 enum class OverrideRejection {
     /** Nothing is active, so there is nothing to override. */
