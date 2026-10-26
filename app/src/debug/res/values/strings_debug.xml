@@ -1,0 +1,16 @@
+<resources>
+    <string name="debug_title">Debug</string>
+    <string name="debug_permission_overlay">Display over other apps</string>
+    <string name="debug_permission_notifications">Notifications</string>
+    <string name="debug_permission_usage">Usage access (verifies Home)</string>
+    <string name="debug_granted">Granted</string>
+    <string name="debug_grant">Grant</string>
+    <string name="debug_always_play">Always play slap sound</string>
+    <string name="debug_slap_now">Slap me now</string>
+    <string name="debug_slap_in_10">Slap me in 10 s</string>
+    <string name="debug_channel_countdown">Debug slap countdown</string>
+    <string name="debug_channel_result">Debug slap result</string>
+    <string name="debug_countdown_title">Slap in %1$d s</string>
+    <string name="debug_countdown_text">Switch to another app now.</string>
+    <string name="debug_result_title">Slap done: %1$s</string>
+</resources>
