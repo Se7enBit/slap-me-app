@@ -8,10 +8,14 @@ import com.noikonomist.slapme.data.FocusSessionRepository
 import com.noikonomist.slapme.data.HistoryRepository
 import com.noikonomist.slapme.data.ScheduleRepository
 import com.noikonomist.slapme.data.db.SlapMeDatabase
+import com.noikonomist.slapme.data.settings.DiagnosticsRepository
 import com.noikonomist.slapme.data.settings.EngineStateRepository
 import com.noikonomist.slapme.data.settings.SettingsRepository
 import com.noikonomist.slapme.data.settings.preferencesStore
 import com.noikonomist.slapme.debug.DebugHooks
+import com.noikonomist.slapme.monitor.MonitorStatus
+import com.noikonomist.slapme.monitor.MonitorStore
+import com.noikonomist.slapme.monitor.PersistentMonitorStore
 import com.noikonomist.slapme.slap.SlapHaptics
 import com.noikonomist.slapme.slap.SlapPipeline
 import com.noikonomist.slapme.slap.SlapSound
@@ -21,6 +25,7 @@ import java.time.Clock
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.MutableStateFlow
 
 class SlapMeApp : Application() {
 
@@ -37,8 +42,8 @@ class SlapMeApp : Application() {
 
 /** Manual DI root. Everything is created on first use. */
 class AppContainer(app: Application) {
-    /** Lives as long as the process; owns the DataStores. */
-    private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    /** Lives as long as the process: owns the DataStores, and runs work that must outlive a component. */
+    val appScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     val clock: Clock = DeviceClock
 
@@ -49,6 +54,9 @@ class AppContainer(app: Application) {
     }
     val engineStateRepository: EngineStateRepository by lazy {
         EngineStateRepository(preferencesStore(appScope) { app.preferencesDataStoreFile("engine_state") })
+    }
+    val diagnosticsRepository: DiagnosticsRepository by lazy {
+        DiagnosticsRepository(preferencesStore(appScope) { app.preferencesDataStoreFile("diagnostics") })
     }
 
     val scheduleRepository: ScheduleRepository by lazy { ScheduleRepository(database.scheduleBlockDao()) }
@@ -65,5 +73,12 @@ class AppContainer(app: Application) {
         ActivationRulesRepository(scheduleRepository, focusSessionRepository, settingsRepository)
     }
 
-    val slapPipeline: SlapPipeline by lazy { SlapPipeline(app, SlapSound(app), SlapHaptics(app)) }
+    val slapHaptics: SlapHaptics by lazy { SlapHaptics(app) }
+    val slapPipeline: SlapPipeline by lazy { SlapPipeline(app, SlapSound(app), slapHaptics) }
+
+    /** Live monitor status, published by the running MonitorService (empty when it isn't running). */
+    val monitorStatus = MutableStateFlow(MonitorStatus())
+    val monitorStore: MonitorStore by lazy {
+        PersistentMonitorStore(engineStateRepository, effectRecorder, diagnosticsRepository)
+    }
 }
