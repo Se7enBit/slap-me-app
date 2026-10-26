@@ -10,6 +10,7 @@ import com.noikonomist.slapme.data.ScheduleRepository
 import com.noikonomist.slapme.data.db.SlapMeDatabase
 import com.noikonomist.slapme.data.settings.DiagnosticsRepository
 import com.noikonomist.slapme.data.settings.EngineStateRepository
+import com.noikonomist.slapme.data.settings.OnboardingRepository
 import com.noikonomist.slapme.data.settings.SettingsRepository
 import com.noikonomist.slapme.data.settings.preferencesStore
 import com.noikonomist.slapme.debug.DebugHooks
@@ -49,9 +50,10 @@ class AppContainer(app: Application) {
 
     val database: SlapMeDatabase by lazy { SlapMeDatabase.create(app) }
 
-    val settingsRepository: SettingsRepository by lazy {
-        SettingsRepository(preferencesStore(appScope) { app.preferencesDataStoreFile("settings") })
-    }
+    /** One DataStore per file: settings and onboarding flags share this one. */
+    private val settingsStore by lazy { preferencesStore(appScope) { app.preferencesDataStoreFile("settings") } }
+    val settingsRepository: SettingsRepository by lazy { SettingsRepository(settingsStore) }
+    val onboardingRepository: OnboardingRepository by lazy { OnboardingRepository(settingsStore) }
     val engineStateRepository: EngineStateRepository by lazy {
         EngineStateRepository(preferencesStore(appScope) { app.preferencesDataStoreFile("engine_state") })
     }
