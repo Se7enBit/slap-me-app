@@ -39,6 +39,8 @@ android {
         unitTests.isIncludeAndroidResources = true
         // android.util.Log (SlapLog) becomes a no-op in plain JVM tests instead of throwing.
         unitTests.isReturnDefaultValues = true
+        // Robolectric's Android 16 runtime needs JDK internals on JDK 17+.
+        unitTests.all { it.jvmArgs("--add-opens=java.base/jdk.internal.access=ALL-UNNAMED") }
     }
 
     buildFeatures {
