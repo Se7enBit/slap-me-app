@@ -104,7 +104,7 @@ class DebugSlapService : Service() {
 
     private fun countdown(secondsLeft: Int): Notification =
         NotificationCompat.Builder(this, CHANNEL_COUNTDOWN)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_slap)
             .setContentTitle(getString(R.string.debug_countdown_title, secondsLeft))
             .setContentText(getString(R.string.debug_countdown_text))
             .setOnlyAlertOnce(true)
@@ -113,7 +113,7 @@ class DebugSlapService : Service() {
 
     private fun result(verdict: String, summary: String): Notification =
         NotificationCompat.Builder(this, CHANNEL_RESULT)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_stat_slap)
             .setContentTitle(getString(R.string.debug_result_title, verdict))
             .setStyle(NotificationCompat.BigTextStyle().bigText(summary))
             .build()
