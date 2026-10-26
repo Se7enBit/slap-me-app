@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Slap Me</string>
+    <string name="home_status_not_armed">Not armed yet. Nothing will slap you… for now.</string>
+</resources>
