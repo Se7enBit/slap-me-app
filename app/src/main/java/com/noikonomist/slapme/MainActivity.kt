@@ -8,7 +8,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.lifecycleScope
 import com.noikonomist.slapme.debug.DebugHooks
 import com.noikonomist.slapme.monitor.MonitorStarter
-import com.noikonomist.slapme.ui.home.HomeScreen
+import com.noikonomist.slapme.ui.AppRoot
 import com.noikonomist.slapme.ui.theme.SlapMeTheme
 import kotlinx.coroutines.launch
 
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             SlapMeTheme {
-                HomeScreen()
+                AppRoot()
             }
         }
         if (savedInstanceState == null) DebugHooks.onIntent(this, intent)
