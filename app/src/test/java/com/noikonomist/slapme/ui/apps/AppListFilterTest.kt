@@ -28,6 +28,13 @@ class AppListFilterTest {
     }
 
     @Test
+    fun countsOnlyInstalledApps() {
+        val installed = setOf("com.google.android.apps.maps", "com.android.chrome")
+        assertEquals(1, AppListFilter.installedCount(setOf("com.google.android.apps.maps", "com.waze", "net.osmand"), installed))
+        assertEquals(0, AppListFilter.installedCount(emptySet(), installed))
+    }
+
+    @Test
     fun searchMatchesNameOrPackageIgnoringCase() {
         assertEquals(listOf("YouTube"), filter(query = "tube"))
         assertEquals(listOf("TikTok"), filter(query = "musically"))
