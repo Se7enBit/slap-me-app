@@ -36,6 +36,33 @@ interface MonitorActions {
     fun overrideRejected(reason: OverrideRejection)
 }
 
+/** Outcome of a snooze or friction-override request. */
+sealed interface OverrideResult {
+    data class Granted(val untilMillis: Long) : OverrideResult
+    data class Rejected(val reason: OverrideRejection) : OverrideResult
+
+    /** No monitor is running, so nothing is watching. */
+    data object NotRunning : OverrideResult
+}
+
+/** Lets the UI reach the running monitor. The service attaches its core while it runs. */
+class MonitorBridge {
+    @Volatile
+    private var core: MonitorCore? = null
+
+    fun attach(core: MonitorCore) {
+        this.core = core
+    }
+
+    fun detach(core: MonitorCore) {
+        if (this.core === core) this.core = null
+    }
+
+    suspend fun snooze(): OverrideResult = core?.snooze() ?: OverrideResult.NotRunning
+
+    suspend fun grantFrictionOverride(): OverrideResult = core?.grantFrictionOverride() ?: OverrideResult.NotRunning
+}
+
 /** A snapshot for the UI and the ongoing notification. */
 data class MonitorStatus(
     val running: Boolean = false,
@@ -48,6 +75,8 @@ data class MonitorStatus(
     val level: Int = 0,
     val lockoutUntilMillis: Long? = null,
     val overrideUntilMillis: Long? = null,
+    /** The free snooze of the current period hasn't been used. */
+    val freeSnoozeAvailable: Boolean = false,
 )
 
 /**
@@ -83,11 +112,19 @@ class MonitorCore(
         publishStatus()
     }
 
-    suspend fun observe(observation: Observation) = step(EngineEvent.Observe(observation))
+    suspend fun observe(observation: Observation) {
+        step(EngineEvent.Observe(observation))
+    }
 
-    suspend fun snooze() = step(EngineEvent.RequestSnooze)
+    suspend fun snooze(): OverrideResult = overrideResult(step(EngineEvent.RequestSnooze))
 
-    suspend fun grantFrictionOverride() = step(EngineEvent.GrantFrictionOverride)
+    suspend fun grantFrictionOverride(): OverrideResult = overrideResult(step(EngineEvent.GrantFrictionOverride))
+
+    private fun overrideResult(effects: List<EngineEffect>?): OverrideResult {
+        if (effects == null) return OverrideResult.NotRunning
+        effects.filterIsInstance<EngineEffect.OverrideRejected>().firstOrNull()?.let { return OverrideResult.Rejected(it.reason) }
+        return state.overrideUntilMillis?.let { OverrideResult.Granted(it) } ?: OverrideResult.NotRunning
+    }
 
     /** Screen off or shutting down: write everything now. */
     suspend fun flush() = mutex.withLock {
@@ -107,8 +144,9 @@ class MonitorCore(
         return (next.toEpochMilli() - now.toEpochMilli()).milliseconds.coerceAtLeast(1.seconds)
     }
 
-    private suspend fun step(event: EngineEvent) = mutex.withLock {
-        val engine = engine ?: return@withLock
+    /** Null while not configured. */
+    private suspend fun step(event: EngineEvent): List<EngineEffect>? = mutex.withLock {
+        val engine = engine ?: return@withLock null
         val settings = checkNotNull(settings)
         val before = state
         val result = engine.handle(state, event)
@@ -145,6 +183,7 @@ class MonitorCore(
                 -> Unit
             }
         }
+        effects
     }
 
     private fun due(last: Long?, now: Long, every: Duration) = last == null || now - last >= every.inWholeMilliseconds
@@ -183,6 +222,7 @@ class MonitorCore(
             level = state.level,
             lockoutUntilMillis = state.lockoutUntilMillis,
             overrideUntilMillis = state.overrideUntilMillis,
+            freeSnoozeAvailable = engine?.freeSnoozeAvailable(state) ?: false,
         )
     }
 

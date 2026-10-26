@@ -94,7 +94,10 @@ class MonitorService : Service() {
         unregisterReceiver(screenReceiver)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) stopListeningToAudioMode()
         notifications.cancelWarning()
-        monitor?.let { container.appScope.launch { it.flush() } }
+        monitor?.let {
+            container.monitorBridge.detach(it)
+            container.appScope.launch { it.flush() }
+        }
         container.monitorStatus.value = MonitorStatus()
         scope.cancel()
         super.onDestroy()
@@ -110,6 +113,7 @@ class MonitorService : Service() {
         )
         this.monitor = monitor
         core.complete(monitor)
+        container.monitorBridge.attach(monitor)
 
         scope.launch {
             container.monitorStatus

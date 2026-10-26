@@ -54,7 +54,7 @@ class MonitorNotifications(private val context: Context) {
             )
             else -> R.string.monitor_ongoing_title_armed to context.getString(R.string.monitor_ongoing_text_waiting)
         }
-        return NotificationCompat.Builder(context, CHANNEL_ONGOING)
+        val builder = NotificationCompat.Builder(context, CHANNEL_ONGOING)
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentTitle(context.getString(title))
             .setContentText(text)
@@ -62,7 +62,10 @@ class MonitorNotifications(private val context: Context) {
             .setOngoing(true)
             .setOnlyAlertOnce(true)
             .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
-            .build()
+        if (status.lockoutUntilMillis != null) {
+            builder.addAction(0, context.getString(R.string.override_need_more_time), openApp(openOverride = true))
+        }
+        return builder.build()
     }
 
     fun showOngoing(status: MonitorStatus, usageAccess: Boolean) = post(ID_ONGOING, ongoing(status, usageAccess))
@@ -79,11 +82,15 @@ class MonitorNotifications(private val context: Context) {
             .setTimeoutAfter((slapAtMillis - System.currentTimeMillis()).coerceAtLeast(0) + 5_000)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_REMINDER)
-            .setContentIntent(openApp())
+            .setContentIntent(openApp(openOverride = true))
             .setAutoCancel(true)
         if (freeSnoozeAvailable) {
             builder.addAction(0, context.getString(R.string.monitor_warning_snooze, duration(snooze)), snoozeIntent())
+        } else {
+            builder.addAction(0, context.getString(R.string.override_need_more_time), openApp(openOverride = true))
         }
+        // A new warning makes an older "Slapped!" note stale.
+        manager.cancel(ID_SLAPPED)
         post(ID_WARNING, builder.build())
     }
 
@@ -97,6 +104,7 @@ class MonitorNotifications(private val context: Context) {
             .setContentText(context.getString(R.string.monitor_slapped_text))
             .setContentIntent(openApp(openOverride = true))
             .setAutoCancel(true)
+            .setTimeoutAfter(SLAPPED_TIMEOUT_MS)
             .build(),
     )
 
@@ -138,12 +146,13 @@ class MonitorNotifications(private val context: Context) {
         const val ID_WARNING = 2
         const val ID_SLAPPED = 3
 
-        /** Set on the "Slapped! Need more time?" tap; Phase 7 opens the override screen for it. */
+        /** Opens the override ("Need more time?") screen. */
         const val EXTRA_OPEN_OVERRIDE = "open_override"
 
         private const val CHANNEL_ONGOING = "monitor"
         private const val CHANNEL_WARNING = "warning"
         private const val CHANNEL_SLAPPED = "slapped"
+        private const val SLAPPED_TIMEOUT_MS = 10 * 60 * 1_000L
         private const val REQUEST_OPEN_APP = 1
         private const val REQUEST_OPEN_OVERRIDE = 2
         private const val REQUEST_SNOOZE = 3

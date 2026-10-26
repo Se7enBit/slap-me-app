@@ -29,14 +29,17 @@ import com.noikonomist.slapme.engine.ScheduleBlock
 import com.noikonomist.slapme.monitor.MonitorStarter
 import com.noikonomist.slapme.ui.appContainer
 import com.noikonomist.slapme.ui.components.ScreenScaffold
+import com.noikonomist.slapme.ui.override.SwitchOff
+import com.noikonomist.slapme.ui.override.rememberSwitchOffGuard
 import kotlinx.coroutines.launch
 
 @Composable
-fun SchedulesScreen(onBack: () -> Unit, onEdit: (blockId: Long) -> Unit) {
+fun SchedulesScreen(onBack: () -> Unit, onEdit: (blockId: Long) -> Unit, onSwitchOffParked: () -> Unit) {
     val context = LocalContext.current
     val repository = appContainer().scheduleRepository
     val scope = rememberCoroutineScope()
     val blocks by repository.blocks.collectAsState(initial = null)
+    val guard = rememberSwitchOffGuard()
 
     ScreenScaffold(
         title = stringResource(R.string.schedules_title),
@@ -62,8 +65,12 @@ fun SchedulesScreen(onBack: () -> Unit, onEdit: (blockId: Long) -> Unit) {
                     block = block,
                     onToggle = { enabled ->
                         scope.launch {
-                            repository.update(block.copy(enabled = enabled))
-                            MonitorStarter.sync(context)
+                            if (enabled) {
+                                repository.update(block.copy(enabled = true))
+                                MonitorStarter.sync(context)
+                            } else if (guard.attempt(SwitchOff.UpdateBlock(block.copy(enabled = false)))) {
+                                onSwitchOffParked()
+                            }
                         }
                     },
                     onClick = { onEdit(block.id) },

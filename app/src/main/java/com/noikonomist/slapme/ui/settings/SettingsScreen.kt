@@ -37,17 +37,30 @@ import com.noikonomist.slapme.ui.components.SectionHeader
 import com.noikonomist.slapme.ui.components.StepperRow
 import com.noikonomist.slapme.ui.components.SwitchRow
 import com.noikonomist.slapme.ui.components.durationText
+import com.noikonomist.slapme.ui.apps.AppListFilter
+import com.noikonomist.slapme.ui.apps.InstalledApps
+import com.noikonomist.slapme.ui.override.SwitchOff
+import com.noikonomist.slapme.ui.override.rememberSwitchOffGuard
+import androidx.compose.runtime.produceState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.launch
 
 /** Every setting saves immediately; a running monitor picks it up live. */
 @Composable
-fun SettingsScreen(onBack: () -> Unit, onPickApps: (AppListKind) -> Unit) {
+fun SettingsScreen(onBack: () -> Unit, onPickApps: (AppListKind) -> Unit, onSwitchOffParked: () -> Unit) {
     val context = LocalContext.current
     val repository = appContainer().settingsRepository
     val scope = rememberCoroutineScope()
     val loaded by repository.settings.collectAsState(initial = null)
+    val guard = rememberSwitchOffGuard()
+    // Counts show only apps that are installed; the saved lists keep the rest.
+    val installed by produceState<Set<String>?>(null) {
+        value = withContext(Dispatchers.IO) { InstalledApps.launcherApps(context).mapTo(mutableSetOf()) { it.packageName } }
+    }
+    fun count(apps: Set<String>) = installed?.let { AppListFilter.installedCount(apps, it) } ?: apps.size
 
     fun update(transform: (Settings) -> Settings) {
         scope.launch {
@@ -66,7 +79,7 @@ fun SettingsScreen(onBack: () -> Unit, onPickApps: (AppListKind) -> Unit) {
             // Activation
             SectionHeader(stringResource(R.string.settings_section_activation))
             SwitchRow(stringResource(R.string.settings_always_on), stringResource(R.string.settings_always_on_text), settings.alwaysOn) { on ->
-                update { it.copy(alwaysOn = on) }
+                if (on) update { it.copy(alwaysOn = true) } else scope.launch { if (guard.attempt(SwitchOff.AlwaysOnOff)) onSwitchOffParked() }
             }
             SwitchRow(stringResource(R.string.settings_daily_cap), stringResource(R.string.settings_daily_cap_text), engine.dailyCap != null) { on ->
                 updateEngine { it.copy(dailyCap = if (on) SettingOptions.dailyCapWhenTurnedOn else null) }
@@ -85,13 +98,13 @@ fun SettingsScreen(onBack: () -> Unit, onPickApps: (AppListKind) -> Unit) {
             ModeRow(
                 stringResource(R.string.settings_mode_blacklist),
                 engine.countingMode == CountingMode.BLACKLIST,
-                apps = engine.blacklist.size,
+                apps = count(engine.blacklist),
                 onChooseApps = { onPickApps(AppListKind.DISTRACTING) },
             ) { updateEngine { it.copy(countingMode = CountingMode.BLACKLIST) } }
             ModeRow(
                 stringResource(R.string.settings_mode_whitelist),
                 engine.countingMode == CountingMode.WHITELIST,
-                apps = engine.whitelist.size,
+                apps = count(engine.whitelist),
                 onChooseApps = { onPickApps(AppListKind.ALLOWED) },
             ) { updateEngine { it.copy(countingMode = CountingMode.WHITELIST) } }
             Note(stringResource(R.string.settings_counting_note))
@@ -157,7 +170,7 @@ fun SettingsScreen(onBack: () -> Unit, onPickApps: (AppListKind) -> Unit) {
             SectionHeader(stringResource(R.string.settings_section_navigation))
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    pluralStringResource(R.plurals.settings_navigation_text, settings.navigationPackages.size, settings.navigationPackages.size),
+                    pluralStringResource(R.plurals.settings_navigation_text, count(settings.navigationPackages), count(settings.navigationPackages)),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                 )

@@ -190,4 +190,23 @@
     <string name="fix_turn_on">Turn on</string>
     <string name="fix_battery_settings">Battery settings</string>
     <string name="fix_dismiss">Dismiss</string>
+
+    <!-- Snooze and override -->
+    <string name="override_need_more_time">Need more time?</string>
+    <string name="override_title">Need more time?</string>
+    <string name="override_switch_off_title">Switch off during a lockout?</string>
+    <string name="override_lockout_left">Locked out for another %1$s.</string>
+    <string name="override_free_snooze_text">You have one free snooze in this focus time. After that, getting more time takes a little effort.</string>
+    <string name="override_free_snooze_button">Snooze %1$s (free)</string>
+    <string name="override_friction_text">Your free snooze is used up. If you really need more time, you can have it, but not with one tap.</string>
+    <string name="override_friction_button">Give me %1$s</string>
+    <string name="override_switch_off_text">You\'re in a lockout, so switching off takes the same effort as asking for more time.</string>
+    <string name="override_switch_off_button">Switch it off</string>
+    <string name="override_nothing">Nothing is watching right now, so there\'s nothing to override.</string>
+    <string name="override_nothing_pending">There\'s nothing waiting to be switched off any more.</string>
+    <string name="override_snooze_used">The free snooze is already used in this focus time.</string>
+    <string name="friction_wait_text">Take a breath. Do you really need it?</string>
+    <string name="friction_type_this">Type this to continue:</string>
+    <!-- The phrase the user must type to get more time. Translate it; matching ignores case and a final period. -->
+    <string name="friction_phrase">I choose to be distracted</string>
 </resources>

@@ -26,11 +26,18 @@ import com.noikonomist.slapme.monitor.MonitorStarter
 import com.noikonomist.slapme.ui.appContainer
 import com.noikonomist.slapme.ui.components.ScreenScaffold
 import com.noikonomist.slapme.ui.components.rememberNow
+import com.noikonomist.slapme.ui.override.SwitchOff
+import com.noikonomist.slapme.ui.override.rememberSwitchOffGuard
 import java.time.ZoneId
 import kotlinx.coroutines.launch
 
 @Composable
-fun HomeScreen(onOpenSchedules: () -> Unit, onOpenSettings: () -> Unit) {
+fun HomeScreen(
+    onOpenSchedules: () -> Unit,
+    onOpenSettings: () -> Unit,
+    onNeedMoreTime: () -> Unit,
+    onSwitchOffParked: () -> Unit,
+) {
     val context = LocalContext.current
     val container = appContainer()
     val scope = rememberCoroutineScope()
@@ -39,6 +46,7 @@ fun HomeScreen(onOpenSchedules: () -> Unit, onOpenSettings: () -> Unit) {
     val settings by container.settingsRepository.settings.collectAsState(initial = null)
     val session by container.focusSessionRepository.running.collectAsState(initial = null)
     val now by rememberNow()
+    val guard = rememberSwitchOffGuard()
 
     /** Any change that may arm or disarm: start or stop the monitor right away. */
     fun change(block: suspend () -> Unit) {
@@ -46,6 +54,11 @@ fun HomeScreen(onOpenSchedules: () -> Unit, onOpenSettings: () -> Unit) {
             block()
             MonitorStarter.sync(context)
         }
+    }
+
+    /** Switch-offs may need the friction override during a lockout. */
+    fun switchOff(action: SwitchOff) {
+        scope.launch { if (guard.attempt(action)) onSwitchOffParked() }
     }
 
     ScreenScaffold(
@@ -72,17 +85,19 @@ fun HomeScreen(onOpenSchedules: () -> Unit, onOpenSettings: () -> Unit) {
             val currentRules = rules
             val currentSettings = settings
             if (currentRules != null && currentSettings != null) {
-                StatusCard(HomeState.from(status, currentRules, currentSettings, now, ZoneId.systemDefault()))
+                StatusCard(HomeState.from(status, currentRules, currentSettings, now, ZoneId.systemDefault()), onNeedMoreTime)
                 SessionCard(
                     session = session,
                     nowMillis = now,
                     onStart = { length -> change { container.focusSessionRepository.start(length) } },
-                    onStop = { change { container.focusSessionRepository.stop() } },
+                    onStop = { switchOff(SwitchOff.StopSession) },
                 )
                 ModesCard(
                     alwaysOn = currentSettings.alwaysOn,
                     blockCount = currentRules.blocks.size,
-                    onAlwaysOn = { on -> change { container.settingsRepository.update { it.copy(alwaysOn = on) } } },
+                    onAlwaysOn = { on ->
+                        if (on) change { container.settingsRepository.update { it.copy(alwaysOn = true) } } else switchOff(SwitchOff.AlwaysOnOff)
+                    },
                     onOpenSchedules = onOpenSchedules,
                 )
                 TodayCard()
