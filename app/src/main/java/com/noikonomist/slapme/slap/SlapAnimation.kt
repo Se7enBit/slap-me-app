@@ -98,9 +98,12 @@ fun SlapAnimation(onImpact: () -> Unit, onFinished: () -> Unit) {
     BoxWithConstraints(Modifier.fillMaxSize().graphicsLayer { this.alpha = alpha.value }) {
         val density = LocalDensity.current
         val widthPx = with(density) { maxWidth.toPx() }
+        // Sizes and offsets follow the shorter side, so portrait and landscape look the same.
+        val base = minOf(maxWidth, maxHeight)
+        val basePx = with(density) { base.toPx() }
         val shakePx = with(density) { 26.dp.toPx() }
-        val handSize = maxWidth * 0.78f
-        val burstSize = maxWidth * 0.9f
+        val handSize = base * 0.78f
+        val burstSize = base * 0.9f
 
         Box(
             Modifier
@@ -116,6 +119,19 @@ fun SlapAnimation(onImpact: () -> Unit, onFinished: () -> Unit) {
         ) {
             if (impacted) {
                 ComicBackground()
+                // Below and left of the hand, so the hand stays visible on top of it.
+                SlapBurst(
+                    Modifier
+                        .align(Alignment.Center)
+                        .size(burstSize)
+                        .graphicsLayer {
+                            translationX = -0.06f * basePx
+                            translationY = 0.24f * basePx
+                            scaleX = burst.value
+                            scaleY = burst.value
+                            rotationZ = -8f
+                        },
+                )
             } else {
                 Box(Modifier.fillMaxSize().background(Color.Black.copy(alpha = 0.35f * swoop.value)))
             }
@@ -128,27 +144,15 @@ fun SlapAnimation(onImpact: () -> Unit, onFinished: () -> Unit) {
                     .size(handSize)
                     .graphicsLayer {
                         val p = swoop.value
-                        translationX = (1f - p) * widthPx
-                        translationY = (1f - p) * -widthPx * 0.25f
+                        // Lands up and to the right of center.
+                        translationX = (1f - p) * widthPx + 0.14f * basePx
+                        translationY = (1f - p) * -basePx * 0.25f - 0.24f * basePx
                         rotationZ = -55f + 40f * p
                         val squash = if (impacted) 1f + 0.08f * (1f - shake.value) else 1f
                         scaleX = squash
                         scaleY = 2f - squash
                     },
             )
-
-            if (impacted) {
-                SlapBurst(
-                    Modifier
-                        .align(Alignment.Center)
-                        .size(burstSize)
-                        .graphicsLayer {
-                            scaleX = burst.value
-                            scaleY = burst.value
-                            rotationZ = -8f
-                        },
-                )
-            }
 
             Box(Modifier.fillMaxSize().background(FlashRed.copy(alpha = flash.value)))
         }

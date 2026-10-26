@@ -7,6 +7,8 @@ import android.media.AudioManager
 import android.media.SoundPool
 import com.noikonomist.slapme.R
 import com.noikonomist.slapme.util.SlapLog
+import kotlinx.coroutines.CompletableDeferred
+import kotlinx.coroutines.withTimeoutOrNull
 
 enum class RingerState { NORMAL, VIBRATE, SILENT }
 
@@ -40,13 +42,14 @@ class SlapSound(context: Context) {
     private val notificationManager = app.getSystemService(NotificationManager::class.java)
     private val pools = SlapStream.entries.associateWith { LoadedSound(it) }
 
-    /** Decides and plays; returns what happened, for the log. */
-    fun play(alwaysPlay: Boolean): String {
+    /** Decides and plays; returns what happened, for the log. Waits briefly if the sample is still loading. */
+    suspend fun play(alwaysPlay: Boolean): String {
         val decision = SoundPolicy.decide(alwaysPlay, ringerState(), doNotDisturb())
         if (decision !is SoundDecision.Play) return decision.toString()
 
         val sound = pools.getValue(decision.stream)
-        if (!sound.loaded) return "$decision skipped: sample not loaded yet"
+        val loaded = withTimeoutOrNull(LOAD_WAIT_MS) { sound.ready.await() } ?: false
+        if (!loaded) return "$decision skipped: sample not loaded"
         val streamId = sound.pool.play(sound.soundId, 1f, 1f, 1, 0, 1f)
         val volume = audioManager.getStreamVolume(sound.streamType)
         val max = audioManager.getStreamMaxVolume(sound.streamType)
@@ -84,17 +87,20 @@ class SlapSound(context: Context) {
             )
             .build()
 
-        @Volatile
-        var loaded = false
-            private set
-
-        val soundId: Int = pool.load(app, R.raw.slap, 1)
+        val ready = CompletableDeferred<Boolean>()
 
         init {
+            // Listener first: loading is asynchronous and may finish right away.
             pool.setOnLoadCompleteListener { _, _, status ->
-                loaded = status == 0
+                ready.complete(status == 0)
                 SlapLog.d("Slap sample loaded for $stream: status=$status")
             }
         }
+
+        val soundId: Int = pool.load(app, R.raw.slap, 1)
+    }
+
+    private companion object {
+        const val LOAD_WAIT_MS = 300L
     }
 }
