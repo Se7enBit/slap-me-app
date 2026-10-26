@@ -45,17 +45,24 @@ import com.noikonomist.slapme.monitor.MonitorStarter
 import com.noikonomist.slapme.ui.appContainer
 import com.noikonomist.slapme.ui.components.ScreenScaffold
 import com.noikonomist.slapme.ui.components.SwitchRow
+import com.noikonomist.slapme.ui.override.SwitchOff
+import com.noikonomist.slapme.ui.override.rememberSwitchOffGuard
 import java.time.DayOfWeek
 import java.time.format.TextStyle
 import kotlinx.coroutines.launch
 
 /** Edits block [blockId], or creates one when it's 0. */
 @Composable
-fun BlockEditorScreen(blockId: Long, onDone: () -> Unit) {
+fun BlockEditorScreen(blockId: Long, onDone: () -> Unit, onSwitchOffParked: () -> Unit) {
     val blocks by appContainer().scheduleRepository.blocks.collectAsState(initial = null)
     val loaded = blocks ?: return
     val existing = loaded.firstOrNull { it.id == blockId }
-    BlockEditor(initial = existing?.let(BlockDraft::from) ?: BlockDraft.NEW, isNew = existing == null, onDone = onDone)
+    BlockEditor(
+        initial = existing?.let(BlockDraft::from) ?: BlockDraft.NEW,
+        isNew = existing == null,
+        onDone = onDone,
+        onSwitchOffParked = onSwitchOffParked,
+    )
 }
 
 private val DraftSaver = listSaver<BlockDraft, Any>(
@@ -75,13 +82,14 @@ private val DraftSaver = listSaver<BlockDraft, Any>(
 private enum class Editing { START, END }
 
 @Composable
-private fun BlockEditor(initial: BlockDraft, isNew: Boolean, onDone: () -> Unit) {
+private fun BlockEditor(initial: BlockDraft, isNew: Boolean, onDone: () -> Unit, onSwitchOffParked: () -> Unit) {
     val context = LocalContext.current
     val repository = appContainer().scheduleRepository
     val scope = rememberCoroutineScope()
     var draft by rememberSaveable(stateSaver = DraftSaver) { mutableStateOf(initial) }
     var editing by remember { mutableStateOf<Editing?>(null) }
     val locale = LocalConfiguration.current.locales[0]
+    val guard = rememberSwitchOffGuard()
 
     fun save(block: suspend () -> Unit) {
         scope.launch {
@@ -91,12 +99,17 @@ private fun BlockEditor(initial: BlockDraft, isNew: Boolean, onDone: () -> Unit)
         }
     }
 
+    /** Editing or deleting may stop it watching now: during a lockout that needs the friction override. */
+    fun switchOff(action: SwitchOff) {
+        scope.launch { if (guard.attempt(action)) onSwitchOffParked() else onDone() }
+    }
+
     ScreenScaffold(
         title = stringResource(if (isNew) R.string.schedule_new_title else R.string.schedule_edit_title),
         onBack = onDone,
         actions = {
             if (!isNew) {
-                IconButton(onClick = { save { repository.delete(draft.id) } }) {
+                IconButton(onClick = { switchOff(SwitchOff.DeleteBlock(draft.id)) }) {
                     Icon(Icons.Default.Delete, contentDescription = stringResource(R.string.schedule_delete))
                 }
             }
@@ -142,7 +155,7 @@ private fun BlockEditor(initial: BlockDraft, isNew: Boolean, onDone: () -> Unit)
             Button(
                 onClick = {
                     val block = draft.toBlock()
-                    save { if (isNew) repository.add(block) else repository.update(block) }
+                    if (isNew) save { repository.add(block) } else switchOff(SwitchOff.UpdateBlock(block))
                 },
                 enabled = draft.errors.isEmpty(),
                 modifier = Modifier.fillMaxWidth(),

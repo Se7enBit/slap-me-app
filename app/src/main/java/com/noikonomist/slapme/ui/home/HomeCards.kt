@@ -39,7 +39,7 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
-fun StatusCard(state: HomeState) {
+fun StatusCard(state: HomeState, onNeedMoreTime: () -> Unit) {
     val container = when (state) {
         is HomeState.Lockout -> MaterialTheme.colorScheme.errorContainer
         is HomeState.Active -> MaterialTheme.colorScheme.primaryContainer
@@ -89,12 +89,14 @@ fun StatusCard(state: HomeState) {
                     state.snoozedUntilMillis?.let {
                         Text(stringResource(R.string.home_snoozed_until, timeOfDayText(it)), style = MaterialTheme.typography.bodyMedium)
                     }
+                    OutlinedButton(onClick = onNeedMoreTime) { Text(stringResource(R.string.override_need_more_time)) }
                 }
 
                 is HomeState.Lockout -> {
                     Title(stringResource(R.string.home_lockout_title))
                     Text(clockText(state.remainingMillis), style = MaterialTheme.typography.displaySmall)
                     Text(stringResource(R.string.home_lockout_text))
+                    OutlinedButton(onClick = onNeedMoreTime) { Text(stringResource(R.string.override_need_more_time)) }
                 }
             }
         }

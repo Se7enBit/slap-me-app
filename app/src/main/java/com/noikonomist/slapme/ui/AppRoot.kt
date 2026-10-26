@@ -27,9 +27,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun appContainer(): AppContainer = (LocalContext.current.applicationContext as SlapMeApp).container
 
-/** Onboarding until it's finished, then Home. Blank while the flag loads, so neither screen flashes. */
+/**
+ * Onboarding until it's finished, then the app. Blank while the flag loads, so neither screen flashes.
+ * [overrideRequest] counts notification taps asking for the override screen.
+ */
 @Composable
-fun AppRoot() {
+fun AppRoot(overrideRequest: Int = 0) {
     val container = appContainer()
     val scope = rememberCoroutineScope()
     val onboarding by container.onboardingRepository.state.collectAsState(initial = null)
@@ -37,7 +40,7 @@ fun AppRoot() {
     when (val state = onboarding) {
         null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
         else -> if (state.completed) {
-            SlapMeNavHost()
+            SlapMeNavHost(overrideRequest)
         } else {
             OnboardingScreen(onFinished = { scope.launch { container.onboardingRepository.complete() } })
         }
