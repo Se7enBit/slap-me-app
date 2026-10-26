@@ -37,6 +37,7 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import com.noikonomist.slapme.R
 import com.noikonomist.slapme.SlapMeApp
+import com.noikonomist.slapme.util.UsageAccess
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -53,7 +54,7 @@ fun DebugPanel() {
     LifecycleResumeEffect(Unit) {
         overlayGranted = Settings.canDrawOverlays(context)
         notificationsGranted = notificationsGranted(context)
-        usageGranted = HomeLaunchCheck.hasUsageAccess(context)
+        usageGranted = UsageAccess.isGranted(context)
         onPauseOrDispose { }
     }
     val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
@@ -105,6 +106,9 @@ fun DebugPanel() {
         lastResult?.let {
             Text(it, style = MaterialTheme.typography.bodySmall, fontFamily = FontFamily.Monospace)
         }
+
+        HorizontalDivider()
+        DebugMonitorSection()
     }
 }
 

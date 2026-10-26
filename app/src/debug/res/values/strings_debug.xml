@@ -13,4 +13,10 @@
     <string name="debug_countdown_title">Slap in %1$d s</string>
     <string name="debug_countdown_text">Switch to another app now.</string>
     <string name="debug_result_title">Slap done: %1$s</string>
+    <string name="debug_monitor_title">Monitor</string>
+    <string name="debug_always_on">Always-on (arms the monitor)</string>
+    <string name="debug_start_session">Start 2-min session</string>
+    <string name="debug_stop_session">Stop session</string>
+    <string name="debug_fast_thresholds">Fast (seconds)</string>
+    <string name="debug_default_thresholds">Default timings</string>
 </resources>
