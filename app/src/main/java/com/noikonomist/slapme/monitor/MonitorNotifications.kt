@@ -89,6 +89,8 @@ class MonitorNotifications(private val context: Context) {
         } else {
             builder.addAction(0, context.getString(R.string.override_need_more_time), openApp(openOverride = true))
         }
+        // A new warning makes an older "Slapped!" note stale.
+        manager.cancel(ID_SLAPPED)
         post(ID_WARNING, builder.build())
     }
 
@@ -102,6 +104,7 @@ class MonitorNotifications(private val context: Context) {
             .setContentText(context.getString(R.string.monitor_slapped_text))
             .setContentIntent(openApp(openOverride = true))
             .setAutoCancel(true)
+            .setTimeoutAfter(SLAPPED_TIMEOUT_MS)
             .build(),
     )
 
@@ -149,6 +152,7 @@ class MonitorNotifications(private val context: Context) {
         private const val CHANNEL_ONGOING = "monitor"
         private const val CHANNEL_WARNING = "warning"
         private const val CHANNEL_SLAPPED = "slapped"
+        private const val SLAPPED_TIMEOUT_MS = 10 * 60 * 1_000L
         private const val REQUEST_OPEN_APP = 1
         private const val REQUEST_OPEN_OVERRIDE = 2
         private const val REQUEST_SNOOZE = 3
