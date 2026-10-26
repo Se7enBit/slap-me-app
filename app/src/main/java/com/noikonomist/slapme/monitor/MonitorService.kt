@@ -199,7 +199,7 @@ class MonitorService : Service() {
             unlocked = !keyguard.isKeyguardLocked,
             inCall = exceptions.inCall(),
             foreground = foreground,
-        )
+        ).also { SlapLog.d("Observe: $it") }
     }
 
     private fun stopMonitoring(reason: String) {

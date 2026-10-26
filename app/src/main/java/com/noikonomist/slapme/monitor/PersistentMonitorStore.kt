@@ -18,8 +18,10 @@ class PersistentMonitorStore(
 
     override suspend fun saveState(state: EngineState) = guarded("save engine state") { engineState.save(state) }
 
-    override suspend fun record(effects: List<EngineEffect>, atMillis: Long) =
+    override suspend fun record(effects: List<EngineEffect>, atMillis: Long) {
+        SlapLog.i("Engine effects: $effects")
         guarded("record effects") { recorder.record(effects, atMillis) }
+    }
 
     override suspend fun recordToday(stats: DailyStats) = guarded("record today") { recorder.recordToday(stats) }
 
